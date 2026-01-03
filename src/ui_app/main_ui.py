@@ -12,7 +12,11 @@ import ssd1306
 from config import config
 from led import set_led_color
 from ntp import Ntp
-from ui_framework.component import Circle, Label, Menu, ProgressBar, Text
+from ui_framework.components.circle import Circle
+from ui_framework.components.label import Label
+from ui_framework.components.menu import Menu
+from ui_framework.components.progress_bar import ProgressBar
+from ui_framework.components.text import Text
 from ui_framework.framework import UIFramework
 from ui_framework.page import Page
 

@@ -11,7 +11,8 @@
 import random
 import time
 
-from ui_framework.component import Menu, Text
+from ui_framework.components.menu import Menu
+from ui_framework.components.text import Text
 from ui_framework.page import Page
 
 
