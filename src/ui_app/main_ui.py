@@ -9,7 +9,7 @@ import network
 from machine import I2C, RTC, Pin
 
 import ssd1306
-from config import config
+from config import settings
 from led import set_led_color
 from ntp import Ntp
 from ui_framework.components.circle import Circle
@@ -192,7 +192,7 @@ class NetworkPage(Page):
             if sta_if.isconnected():
                 self.status_label.text = "Status: Connected"
                 # 获取 SSID（如果可能）
-                wifi_config = config.get("wifi", {})
+                wifi_config = settings.get("wifi", {})
                 ssid = wifi_config.get("ssid", "Unknown")
                 self.ssid_label.text = f"SSID: {ssid[:16]}"
                 # 获取 IP

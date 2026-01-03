@@ -28,37 +28,22 @@ class KeyboardPage(Page):
 
         # 创建键盘组件
         self.keyboard = Keyboard(
-            title=title, default_value=default_value, callback=callback, x=0, y=0
+            title=title, default_value=default_value, callback=self._callback, x=0, y=0
         )
         self.add_component(self.keyboard)
 
+    def _callback(self, text):
+        """内部回调函数，调用用户提供的回调"""
+        if self._init_callback and text is not None:
+            self._init_callback(text)
+        if self.manager:
+            self.manager.pop_page()
+
     def on_enter(self, **kwargs):
         """
-        页面进入时调用，支持动态参数
-
-        Args:
-            **kwargs: 可选参数
-                title: 覆盖标题
-                default_value: 覆盖默认值
-                callback: 覆盖回调函数
+        页面进入时调用
         """
         super().on_enter(**kwargs)
-
-        # 使用传入的参数更新键盘组件
-        if "title" in kwargs:
-            self.keyboard.title = kwargs["title"]
-        else:
-            self.keyboard.title = self._init_title
-
-        if "default_value" in kwargs:
-            self.keyboard.buffer = kwargs["default_value"]
-        else:
-            self.keyboard.buffer = self._init_default_value
-
-        if "callback" in kwargs:
-            self.keyboard.callback = kwargs["callback"]
-        else:
-            self.keyboard.callback = self._init_callback
 
         # 重置光标位置
         self.keyboard.cursor_x = 0

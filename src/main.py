@@ -1,55 +1,10 @@
-import os
-import time
-
-import machine
-import network
-from machine import I2C, RTC, Pin
+from machine import I2C, Pin
 
 import ssd1306
-from __init__ import __author__, __homepage__, __version__
-from config import config
+from common import connect_to_saved_networks
 from led import set_led_color
-from ntp import Ntp
 from ui_app.pages import create_ui
 from ui_framework.framework import UIFramework
-
-
-def sync_time():
-    hosts = config.get(
-        "ntp_hosts", ["0.pool.ntp.org", "1.pool.ntp.org", "2.pool.ntp.org"]
-    )
-
-    _rtc = RTC()
-    Ntp.set_datetime_callback(_rtc.datetime)
-    Ntp.set_hosts(tuple(hosts))
-    Ntp.set_ntp_timeout(1)
-    Ntp.set_timezone(8, 0)
-    Ntp.set_epoch(Ntp.EPOCH_1970)
-    Ntp.rtc_sync()
-
-
-def connect_wlan():
-    sta_if = network.WLAN(network.STA_IF)
-    sta_if.active(True)
-
-    # wifi_config = config.get("wifi", {})
-    # if not ("ssid" in wifi_config and "password" in wifi_config):
-    #     print(
-    #         "You can configure WiFi settings in config.json, or use the `config` module to set it programmatically."
-    #     )
-    #     return
-
-    # ssid = wifi_config["ssid"]
-    # password = wifi_config["password"]
-
-    # sta_if.connect(ssid, password)
-    # # 等待连接成功或超时
-    # for _ in range(20):
-    #     if sta_if.isconnected():
-    #         break
-    #     time.sleep(1)
-    # if sta_if.isconnected():
-    #     sync_time()
 
 
 def main():
@@ -66,7 +21,7 @@ def main():
 
     # 连接 WiFi 和同步时间
     try:
-        connect_wlan()
+        connect_to_saved_networks()
         set_led_color(0, 0, 0)
     except Exception as e:
         set_led_color(10, 0, 0)
@@ -104,12 +59,12 @@ def main():
         print("\n\nUI stopped by user (Ctrl+C)")
     except Exception as e:
         print(f"\n\nError in UI: {e}")
-        # 显示错误（红色 LED）
-        set_led_color(10, 0, 0)
     finally:
         # 清理：关闭 LED
         set_led_color(0, 0, 0)
         print("UI system stopped.")
+        # 显示错误（红色 LED）
+        set_led_color(10, 0, 0)
 
 
 # 启动主程序

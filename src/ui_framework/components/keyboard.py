@@ -214,11 +214,18 @@ class Keyboard(Component):
                 return True
             elif key == "back":
                 # 长按 BACK：确认输入
+                self.move_cursor_right()
                 self.confirm_input()
                 return True
             elif key == "down":
-                # 长按 DOWN：退格
+                # 长按 DOWN：取消输入
                 self.move_cursor_up()
+                if self.callback:
+                    self.callback(None)
+                return True
+            elif key == "up":
+                # 长按 UP：退格
+                self.move_cursor_down()
                 self.backspace()
                 return True
 

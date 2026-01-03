@@ -16,7 +16,7 @@ class Page:
         """
         self.name = name
         self.components = []
-        self.manager = None  # type: ignore
+        self.manager = None  # type: PageManager | None
         self.active = False
 
     def add_component(self, component):
