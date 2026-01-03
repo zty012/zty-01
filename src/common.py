@@ -37,7 +37,6 @@ def connect_to_saved_networks():
             for _ in range(10):
                 if sta_if.isconnected():
                     print(f"Connected to {ssid_str}")
-                    sync_time()
                     return True
                 time.sleep(1)
-            print(f"Failed to connect to {ssid_str}")
+            raise Exception(f"X {ssid_str}")
