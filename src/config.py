@@ -1,8 +1,14 @@
 import json
 
-_fp = open("config.json", "r", encoding="u8")
-text = _fp.read()
-_fp.close()
+try:
+    _fp = open("config.json", "r", encoding="u8")
+    text = _fp.read()
+    _fp.close()
+except OSError:
+    text = "{}"
+    _fp = open("config.json", "w", encoding="u8")
+    _fp.write(text)
+    _fp.close()
 config: dict = json.loads(text) if text.startswith("{") else {}
 
 

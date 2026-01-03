@@ -1,8 +1,9 @@
-from machine import Pin
-import neopixel
 import time
-from easings import ease_out_expo
 
+import neopixel
+from machine import Pin
+
+from easings import ease_out_expo
 
 pin = Pin(48, Pin.OUT)
 np = neopixel.NeoPixel(pin, 1)
@@ -10,7 +11,7 @@ np[0] = (0, 0, 0)
 np.write()
 
 
-def set_led_color(r: int, g: int, b: int, duration: float = 0.5, easing=ease_out_expo):
+def set_led_color(r: int, g: int, b: int, duration: float = 0.25, easing=ease_out_expo):
     """设置LED颜色，支持缓动效果
 
     Args:

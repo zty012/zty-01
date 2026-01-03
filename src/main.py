@@ -1,13 +1,17 @@
-import time
-import machine
-from mylib.bh1750 import BH1750
-from machine import I2C, RTC, Pin
-import network
-from mylib.ntp import Ntp
-from config import config
-from __init__ import __version__, __author__, __homepage__
 import os
+import time
+
+import machine
+import network
+from machine import I2C, RTC, Pin
+
+import ssd1306
+from __init__ import __author__, __homepage__, __version__
+from config import config
 from led import set_led_color
+from ntp import Ntp
+from ui_app.pages import create_ui
+from ui_framework.framework import UIFramework
 
 
 def hello():
@@ -78,18 +82,95 @@ def connect_wlan():
         sync_time()
 
 
-set_led_color(2, 5, 16)
-hello()
-connect_wlan()
-set_led_color(0, 0, 0)
+def main():
+    """主函数 - 启动系统和 UI"""
+
+    # 打印欢迎信息
+    hello()
+
+    # LED 蓝色表示启动中
+    set_led_color(2, 5, 16)
+
+    # 连接 WiFi 和同步时间
+    try:
+        connect_wlan()
+        set_led_color(0, 0, 0)
+    except Exception as e:
+        set_led_color(10, 0, 0)
+        print(f"WiFi/NTP error: {e}")
+        # 继续运行，不中断 UI
+
+    # 初始化硬件
+    print()
+    print("=" * 40)
+    print("Initializing UI System...")
+    print("=" * 40)
+
+    scl = Pin(16)
+    sda = Pin(15)
+    i2c = I2C(scl=scl, sda=sda)
+    display = ssd1306.SSD1306_I2C(128, 64, i2c)
+
+    # 创建 UI 框架
+    print("Creating UI framework...")
+    ui = UIFramework(display)
+
+    # 注册按钮
+    # K1: 确认
+    # K2: 取消
+    # K3: 上
+    # K4: 下
+    print("Registering buttons...")
+    ui.register_button("k1", 7)
+    ui.register_button("k2", 6)
+    ui.register_button("k3", 5)
+    ui.register_button("k4", 4)
+
+    # 设置按键映射
+    ui.set_key_mapping("k1", "ok")  # K1 = 确认
+    ui.set_key_mapping("k2", "back")  # K2 = 取消
+    ui.set_key_mapping("k3", "down")  # K3 = 下
+    ui.set_key_mapping("k4", "up")  # K4 = 上
+
+    # 创建实用页面
+    print("Loading pages...")
+    create_ui(ui)
+
+    # 设置帧率
+    ui.fps = 30
+
+    # 准备就绪，关闭 LED
+    set_led_color(0, 0, 0)
+
+    print()
+    print("UI Ready!")
+    print("Controls:")
+    print("  K1 = OK/Confirm")
+    print("  K2 = Back/Cancel")
+    print("  K3 = Up/Previous")
+    print("  K4 = Down/Next")
+    print()
+    print("Starting main loop...")
+    print()
+
+    # 运行主循环
+    try:
+        ui.run()
+    except KeyboardInterrupt:
+        print("\n\nUI stopped by user (Ctrl+C)")
+    except Exception as e:
+        print(f"\n\nError in UI: {e}")
+        import sys
+
+        sys.print_exception(e)
+        # 显示错误（红色 LED）
+        set_led_color(10, 0, 0)
+    finally:
+        # 清理：关闭 LED
+        set_led_color(0, 0, 0)
+        print("UI system stopped.")
 
 
-i2c0_sda = Pin(18, mode=Pin.IN, pull=Pin.PULL_UP)
-i2c0_scl = Pin(19, mode=Pin.IN, pull=Pin.PULL_UP)
-i2c0 = I2C(0, sda=i2c0_sda, scl=i2c0_scl)
-
-bh1750 = BH1750(0x23, i2c0)
-
-while True:
-    print(bh1750.measurement)
-    time.sleep(1)
+# 启动主程序
+if __name__ == "__main__":
+    main()
