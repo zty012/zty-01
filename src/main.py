@@ -32,16 +32,16 @@ def main():
     ui = UIFramework(display)
 
     # 注册按钮
-    ui.register_button("k1", 7)
-    ui.register_button("k2", 6)
-    ui.register_button("k3", 5)
-    ui.register_button("k4", 4)
+    ui.register_button("k1", 4)
+    ui.register_button("k2", 5)
+    ui.register_button("k3", 6)
+    ui.register_button("k4", 7)
 
     # 设置按键映射
-    ui.set_key_mapping("k1", "ok")  # K1 = 确认
-    ui.set_key_mapping("k2", "back")  # K2 = 取消
-    ui.set_key_mapping("k3", "down")  # K3 = 下
-    ui.set_key_mapping("k4", "up")  # K4 = 上
+    ui.set_key_mapping("k1", "up")
+    ui.set_key_mapping("k2", "down")
+    ui.set_key_mapping("k3", "back")
+    ui.set_key_mapping("k4", "ok")
 
     # 创建实用页面
     create_ui(ui)
