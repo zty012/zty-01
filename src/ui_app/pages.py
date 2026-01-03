@@ -22,6 +22,7 @@ class MainMenu(Page):
 
         # 菜单
         self.menu = Menu("ZTY-01", x=0, y=0, width=128)
+        self.menu.add_item("Snake Game", lambda: self.goto("snake_game"))
         self.menu.add_item("Clock", lambda: self.goto("clock"))
         self.menu.add_item("Network", lambda: self.goto("network"))
         self.menu.add_item("System Info", lambda: self.goto("system"))
@@ -414,8 +415,18 @@ def create_ui(ui_framework):
     Args:
         ui_framework: UIFramework 实例
     """
+    # 导入贪吃蛇游戏
+    from ui_app.snake_game import SnakeGameOverPage, SnakeGamePage, SnakePausePage
+
     # 注册所有实用页面
     ui_framework.register_page("main_menu", MainMenu())
+
+    # 注册贪吃蛇游戏页面
+    snake_game_page = SnakeGamePage()
+    ui_framework.register_page("snake_game", snake_game_page)
+    ui_framework.register_page("snake_pause", SnakePausePage(snake_game_page))
+    ui_framework.register_page("snake_game_over", SnakeGameOverPage(snake_game_page))
+
     ui_framework.register_page("clock", ClockPage())
     ui_framework.register_page("network", NetworkStatusPage())
     ui_framework.register_page("system", SystemInfoPage())
