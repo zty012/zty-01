@@ -51,6 +51,8 @@ def main():
     ui.set_key_mapping("k3", "back")
     ui.set_key_mapping("k4", "ok")
 
+    ui.set_default_transition("push_left")
+
     # 创建实用页面
     create_ui(ui)
 

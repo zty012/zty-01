@@ -3,6 +3,8 @@ UI 页面管理系统
 提供页面切换、生命周期管理等功能
 """
 
+from ui_framework.transitions import NoTransition
+
 
 class Page:
     """页面基类"""
@@ -120,6 +122,17 @@ class PageManager:
         self.pages = {}
         self.page_stack = []
         self.current_page = None
+        self.transition = None  # 当前正在执行的过渡动画
+        self.default_transition = None  # 默认过渡动画
+
+    def set_default_transition(self, transition):
+        """
+        设置默认过渡动画
+
+        Args:
+            transition: 过渡动画对象
+        """
+        self.default_transition = transition
 
     def register_page(self, name, page):
         """
@@ -133,13 +146,14 @@ class PageManager:
         page.manager = self
         return page
 
-    def goto_page(self, name, clear_stack=False, **kwargs):
+    def goto_page(self, name, clear_stack=False, transition=None, **kwargs):
         """
         切换到指定页面
 
         Args:
             name: 页面名称或页面实例
             clear_stack: 是否清空页面栈（用于切换主页面）
+            transition: 过渡动画对象（None 使用默认动画，False 无动画）
             **kwargs: 传递给页面的参数
         """
         # 支持传入页面实例
@@ -153,9 +167,22 @@ class PageManager:
             print(f"Warning: Page '{name}' not found")
             return False
 
-        # 退出当前页面
-        if self.current_page:
-            self.current_page.on_exit()
+        # 确定使用的过渡动画
+        if transition is False:
+            # 显式禁用动画
+            used_transition = NoTransition()
+        elif transition is not None:
+            # 使用指定的动画
+            used_transition = transition
+        elif self.default_transition is not None:
+            # 使用默认动画
+            used_transition = self.default_transition
+        else:
+            # 没有动画
+            used_transition = NoTransition()
+
+        # 保存旧页面引用
+        from_page = self.current_page
 
         # 清空栈或保存当前页面
         if clear_stack:
@@ -163,17 +190,27 @@ class PageManager:
         elif self.current_page:
             self.page_stack.append(self.current_page)
 
-        # 进入新页面
+        # 设置新页面（但先不退出旧页面，让动画可以渲染）
         self.current_page = page
         self.current_page.on_enter(**kwargs)
+
+        # 启动过渡动画
+        self.transition = used_transition
+        self.transition.start(from_page, page, self.display)
+
+        # 如果旧页面存在且动画已完成，退出旧页面
+        if from_page and self.transition.finished:
+            from_page.on_exit()
+
         return True
 
-    def push_page(self, name, **kwargs):
+    def push_page(self, name, transition=None, **kwargs):
         """
         推入新页面到栈顶（保留上一个页面）
 
         Args:
             name: 页面名称或页面实例
+            transition: 过渡动画对象（None 使用默认动画，False 无动画）
             **kwargs: 传递给页面的参数
         """
         # 支持传入页面实例
@@ -187,31 +224,75 @@ class PageManager:
             print(f"Warning: Page '{name}' not found")
             return False
 
-        # 暂停当前页面
+        # 确定使用的过渡动画
+        if transition is False:
+            used_transition = NoTransition()
+        elif transition is not None:
+            used_transition = transition
+        elif self.default_transition is not None:
+            used_transition = self.default_transition
+        else:
+            used_transition = NoTransition()
+
+        # 保存旧页面引用
+        from_page = self.current_page
+
+        # 暂停当前页面并入栈
         if self.current_page:
-            self.current_page.on_pause()
             self.page_stack.append(self.current_page)
 
         # 进入新页面
         self.current_page = page
         self.current_page.on_enter(**kwargs)
+
+        # 启动过渡动画
+        self.transition = used_transition
+        self.transition.start(from_page, page, self.display)
+
+        # 如果动画已完成，暂停旧页面
+        if from_page and self.transition.finished:
+            from_page.on_pause()
+
         return True
 
-    def pop_page(self):
+    def pop_page(self, transition=None):
         """
         弹出当前页面，返回上一个页面
+
+        Args:
+            transition: 过渡动画对象（None 使用默认动画的反向，False 无动画）
         """
         if not self.page_stack:
             print("Warning: No page to pop")
             return False
 
-        # 退出当前页面
-        if self.current_page:
-            self.current_page.on_exit()
+        # 确定使用的过渡动画
+        if transition is False:
+            used_transition = NoTransition()
+        elif transition is not None:
+            used_transition = transition
+        elif self.default_transition is not None:
+            # pop 时使用默认动画的反向
+            used_transition = self.default_transition.reverse()
+        else:
+            used_transition = NoTransition()
+
+        # 保存旧页面引用
+        from_page = self.current_page
 
         # 恢复上一个页面
-        self.current_page = self.page_stack.pop()
+        to_page = self.page_stack.pop()
+        self.current_page = to_page
         self.current_page.on_resume()
+
+        # 启动过渡动画
+        self.transition = used_transition
+        self.transition.start(from_page, to_page, self.display)
+
+        # 如果动画已完成，退出旧页面
+        if from_page and self.transition.finished:
+            from_page.on_exit()
+
         return True
 
     def back(self):
@@ -225,12 +306,22 @@ class PageManager:
         Args:
             delta_time: 距离上次更新的时间差（秒）
         """
+        # 更新过渡动画
+        if self.transition and not self.transition.finished:
+            self.transition.update(delta_time)
+
+        # 更新当前页面
         if self.current_page:
             self.current_page.update(delta_time)
 
     def render(self):
         """渲染当前页面"""
-        if self.current_page:
+        # 如果有正在执行的过渡动画，渲染动画
+        if self.transition and not self.transition.finished:
+            self.transition.render()
+            self.display.show()
+        # 否则正常渲染当前页面
+        elif self.current_page:
             self.current_page.render(self.display)
             self.display.show()
 

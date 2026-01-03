@@ -14,6 +14,13 @@ from ui_framework.components.progress_bar import ProgressBar
 from ui_framework.components.text import Text
 from ui_framework.input import InputManager, KeyMapper
 from ui_framework.page import Page, PageManager
+from ui_framework.transitions import (
+    FadeTransition,
+    NoTransition,
+    PushTransition,
+    SlideTransition,
+    WipeTransition,
+)
 
 
 class UIFramework:
@@ -51,23 +58,96 @@ class UIFramework:
         """
         return self.page_manager.register_page(name, page)
 
-    def goto_page(self, name, clear_stack=False):
+    def set_default_transition(self, transition):
+        """
+        设置默认页面过渡动画
+
+        Args:
+            transition: 过渡动画对象或字符串
+                - Transition 对象：直接使用
+                - 字符串：支持 "slide_left", "slide_right", "slide_up", "slide_down",
+                         "fade", "wipe_left", "wipe_right", "push_left", "push_right", "none"
+        """
+        if isinstance(transition, str):
+            transition = self._create_transition_from_string(transition)
+        self.page_manager.set_default_transition(transition)
+
+    def _create_transition_from_string(self, name, duration=0.3):
+        """
+        从字符串创建过渡动画对象
+
+        Args:
+            name: 动画名称
+            duration: 动画持续时间
+        """
+        name_lower = name.lower()
+        if name_lower == "slide_left":
+            return SlideTransition(duration, "left")
+        elif name_lower == "slide_right":
+            return SlideTransition(duration, "right")
+        elif name_lower == "slide_up":
+            return SlideTransition(duration, "up")
+        elif name_lower == "slide_down":
+            return SlideTransition(duration, "down")
+        elif name_lower == "fade":
+            return FadeTransition(duration)
+        elif name_lower == "wipe_left":
+            return WipeTransition(duration, "left")
+        elif name_lower == "wipe_right":
+            return WipeTransition(duration, "right")
+        elif name_lower == "wipe_up":
+            return WipeTransition(duration, "up")
+        elif name_lower == "wipe_down":
+            return WipeTransition(duration, "down")
+        elif name_lower == "push_left":
+            return PushTransition(duration, "left")
+        elif name_lower == "push_right":
+            return PushTransition(duration, "right")
+        elif name_lower == "push_up":
+            return PushTransition(duration, "up")
+        elif name_lower == "push_down":
+            return PushTransition(duration, "down")
+        elif name_lower == "none":
+            return NoTransition()
+        else:
+            print(f"Warning: Unknown transition '{name}', using no transition")
+            return NoTransition()
+
+    def goto_page(self, name, clear_stack=False, transition=None):
         """
         切换到指定页面
 
         Args:
             name: 页面名称
             clear_stack: 是否清空页面栈
+            transition: 过渡动画（None=使用默认，False=无动画，字符串或Transition对象）
         """
-        return self.page_manager.goto_page(name, clear_stack)
+        if isinstance(transition, str):
+            transition = self._create_transition_from_string(transition)
+        return self.page_manager.goto_page(name, clear_stack, transition)
 
-    def push_page(self, name):
-        """推入新页面"""
-        return self.page_manager.push_page(name)
+    def push_page(self, name, transition=None):
+        """
+        推入新页面
 
-    def pop_page(self):
-        """弹出当前页面"""
-        return self.page_manager.pop_page()
+        Args:
+            name: 页面名称
+            transition: 过渡动画（None=使用默认，False=无动画，字符串或Transition对象）
+        """
+        if isinstance(transition, str):
+            transition = self._create_transition_from_string(transition)
+        return self.page_manager.push_page(name, transition)
+
+    def pop_page(self, transition=None):
+        """
+        弹出当前页面
+
+        Args:
+            transition: 过渡动画（None=使用默认，False=无动画，字符串或Transition对象）
+        """
+        if isinstance(transition, str):
+            transition = self._create_transition_from_string(transition)
+        return self.page_manager.pop_page(transition)
 
     def register_button(self, name, pin_num, pull=None, inverted=True):
         """
