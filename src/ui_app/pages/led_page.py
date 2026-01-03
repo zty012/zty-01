@@ -52,7 +52,7 @@ class LEDPage(Page):
 
     def _back_pressed(self):
         return (
-            UIFramework.instance.input_manager.buttons["k2"]["pin"].value() == 0
+            UIFramework.instance.input_manager.buttons["k3"]["pin"].value() == 0
             if UIFramework.instance
             else False
         )
