@@ -148,6 +148,10 @@ class Menu(Component):
             # 绘制文本（始终白色）
             display.text(item["label"], self.x + 2, y + 2, 1)
 
+            # 如果有操作，绘制一个小箭头提示
+            if item.get("action"):
+                display.text(">", self.x + self.width - 10, y + 2, 1)
+
         # 绘制动画高亮框框
         if self.anim_enabled:
             # 使用动画位置

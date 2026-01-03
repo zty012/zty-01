@@ -16,8 +16,9 @@ class InputManager:
         self.buttons = {}
         self.button_states = {}
         self.button_last_press = {}
+        self.button_long_press_triggered = {}  # 记录长按是否已触发
         self.debounce_time = 0.05  # 防抖时间（秒）
-        self.long_press_time = 1.0  # 长按时间（秒）
+        self.long_press_time = 0.5  # 长按时间（秒）
         self.event_queue = []
 
     def register_button(self, name, pin_num, pull=Pin.PULL_UP, inverted=True):
@@ -39,6 +40,7 @@ class InputManager:
         }
         self.button_states[name] = False
         self.button_last_press[name] = 0
+        self.button_long_press_triggered[name] = False
 
     def _is_button_pressed(self, name):
         """检查按钮是否被按下"""
@@ -91,19 +93,25 @@ class InputManager:
                 if press_duration < self.long_press_time:
                     self.event_queue.append({"type": "key_click", "key": name})
 
+                # 重置长按触发标志
+                self.button_long_press_triggered[name] = False
+
             # 检测长按事件
             elif is_pressed and was_pressed:
                 press_duration = current_time - btn["press_time"]
-                if press_duration >= self.long_press_time:
-                    # 只在刚达到长按时间时触发一次
-                    if press_duration - self.long_press_time < 0.1:
-                        self.event_queue.append(
-                            {
-                                "type": "key_long_press",
-                                "key": name,
-                                "duration": press_duration,
-                            }
-                        )
+                # 只在达到长按时间且未触发过时触发一次
+                if (
+                    press_duration >= self.long_press_time
+                    and not self.button_long_press_triggered[name]
+                ):
+                    self.button_long_press_triggered[name] = True
+                    self.event_queue.append(
+                        {
+                            "type": "key_long_press",
+                            "key": name,
+                            "duration": press_duration,
+                        }
+                    )
 
     def poll_event(self):
         """

@@ -16,7 +16,7 @@ class Page:
         """
         self.name = name
         self.components = []
-        self.manager = None
+        self.manager = None  # type: ignore
         self.active = False
 
     def add_component(self, component):
@@ -29,8 +29,13 @@ class Page:
         if component in self.components:
             self.components.remove(component)
 
-    def on_enter(self):
-        """页面进入时调用（子类可重写）"""
+    def on_enter(self, **kwargs):
+        """
+        页面进入时调用（子类可重写）
+
+        Args:
+            **kwargs: 传递给页面的参数
+        """
         self.active = True
 
     def on_exit(self):
@@ -128,15 +133,23 @@ class PageManager:
         page.manager = self
         return page
 
-    def goto_page(self, name, clear_stack=False):
+    def goto_page(self, name, clear_stack=False, **kwargs):
         """
         切换到指定页面
 
         Args:
-            name: 页面名称
+            name: 页面名称或页面实例
             clear_stack: 是否清空页面栈（用于切换主页面）
+            **kwargs: 传递给页面的参数
         """
-        if name not in self.pages:
+        # 支持传入页面实例
+        if isinstance(name, Page):
+            page = name
+            # 为页面实例设置 manager
+            page.manager = self  # type: ignore
+        elif name in self.pages:
+            page = self.pages[name]
+        else:
             print(f"Warning: Page '{name}' not found")
             return False
 
@@ -151,18 +164,26 @@ class PageManager:
             self.page_stack.append(self.current_page)
 
         # 进入新页面
-        self.current_page = self.pages[name]
-        self.current_page.on_enter()
+        self.current_page = page
+        self.current_page.on_enter(**kwargs)
         return True
 
-    def push_page(self, name):
+    def push_page(self, name, **kwargs):
         """
         推入新页面到栈顶（保留上一个页面）
 
         Args:
-            name: 页面名称
+            name: 页面名称或页面实例
+            **kwargs: 传递给页面的参数
         """
-        if name not in self.pages:
+        # 支持传入页面实例
+        if isinstance(name, Page):
+            page = name
+            # 为页面实例设置 manager
+            page.manager = self  # type: ignore
+        elif name in self.pages:
+            page = self.pages[name]
+        else:
             print(f"Warning: Page '{name}' not found")
             return False
 
@@ -172,8 +193,8 @@ class PageManager:
             self.page_stack.append(self.current_page)
 
         # 进入新页面
-        self.current_page = self.pages[name]
-        self.current_page.on_enter()
+        self.current_page = page
+        self.current_page.on_enter(**kwargs)
         return True
 
     def pop_page(self):

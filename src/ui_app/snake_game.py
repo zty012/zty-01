@@ -131,12 +131,12 @@ class SnakeGamePage(Page):
     def goto_pause(self):
         """进入暂停页面"""
         if self.manager:
-            self.manager.push_page("snake_pause")
+            self.manager.push_page(SnakePausePage(self))
 
     def goto_game_over(self):
         """进入游戏结束页面"""
         if self.manager:
-            self.manager.push_page("snake_game_over")
+            self.manager.push_page(SnakeGameOverPage(self))
 
     def move_snake(self):
         """移动蛇"""
