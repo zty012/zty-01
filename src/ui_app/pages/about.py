@@ -2,6 +2,7 @@
 关于页面
 """
 
+from ui_framework.components.menu import Menu
 from ui_framework.components.text import Text
 from ui_framework.page import Page
 
@@ -12,22 +13,19 @@ class AboutPage(Page):
     def __init__(self):
         super().__init__("About")
 
-        # 标题
-        title = Text("About", x=64, y=2)
-        title.align = "center"
-        self.add_component(title)
-
         # 版本信息
-        from __init__ import __version__
+        from __init__ import __author__ as author
+        from __init__ import __homepage__ as homepage
+        from __init__ import __version__ as version
 
-        version = Text(f"v{__version__}", x=64, y=32)
-        version.align = "center"
-        self.add_component(version)
-
-        # UI 框架版本
-        ui_ver = Text("UI Framework v1.0", x=64, y=44)
-        ui_ver.align = "center"
-        self.add_component(ui_ver)
+        self.menu = Menu("About zty-01", x=0, y=0, width=128)
+        self.menu.add_item("Version:")
+        self.menu.add_item(f" {version}")
+        self.menu.add_item("Author:")
+        self.menu.add_item(f" {author}")
+        self.menu.add_item("Homepage:")
+        self.menu.add_item(f" {homepage}")
+        self.add_component(self.menu)
 
     def _handle_page_event(self, event):
         if event.get("type") == "key_press" and event.get("key") == "back":
