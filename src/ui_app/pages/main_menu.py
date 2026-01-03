@@ -18,7 +18,7 @@ class MainMenu(Page):
         self.menu.add_item("Clock", lambda: self.goto("clock"))
         self.menu.add_item("Network", lambda: self.goto("network"))
         self.menu.add_item("System Info", lambda: self.goto("system"))
-        self.menu.add_item("LED Test", lambda: self.goto("led_test"))
+        self.menu.add_item("LED", lambda: self.goto("led"))
         self.menu.add_item("About", lambda: self.goto("about"))
         self.menu.add_item("Settings", lambda: self.goto("settings"))
         self.add_component(self.menu)

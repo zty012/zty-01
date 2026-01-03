@@ -1,6 +1,6 @@
 from ui_app.pages.about import AboutPage
 from ui_app.pages.clock import ClockPage
-from ui_app.pages.led_test import LEDTestPage
+from ui_app.pages.led_page import LEDPage
 from ui_app.pages.main_menu import MainMenu
 from ui_app.pages.network import NetworkPage
 from ui_app.pages.settings import SettingsPage
@@ -22,7 +22,7 @@ def create_ui(ui_framework):
     ui_framework.register_page("clock", ClockPage())
     ui_framework.register_page("network", NetworkPage())
     ui_framework.register_page("system", SystemInfoPage())
-    ui_framework.register_page("led_test", LEDTestPage())
+    ui_framework.register_page("led", LEDPage())
     ui_framework.register_page("about", AboutPage())
     ui_framework.register_page("settings", SettingsPage())
 
