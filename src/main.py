@@ -4,6 +4,7 @@ import ssd1306
 from common import connect_to_saved_networks, sync_time
 from led import set_led_color
 from ui_app.pages import create_ui
+from ui_framework.components.unifont_text import UnifontText
 from ui_framework.framework import UIFramework
 
 
@@ -16,18 +17,22 @@ def main():
     i2c = I2C(scl=scl, sda=sda)
     display = ssd1306.SSD1306_I2C(128, 64, i2c)
     display.fill(0)
-    display.text("Booting...", 0, 0)
+    display.text("Loading...", 0, 0)
     display.show()
 
     # 加载提示
     set_led_color(2, 5, 16)
 
-    # 连接 WiFi 和同步时间
     try:
-        display.text("Connecting Wi-Fi", 0, 8)
+        display.text("Loading Unifont", 0, 8)
+        display.show()
+        UnifontText.init_unifont(
+            bin_path="/unifont.bin", chars_path="/unifont_chars.txt"
+        )
+        display.text("Connecting Wi-Fi", 0, 16)
         display.show()
         connect_to_saved_networks()
-        display.text("Syncing time", 0, 16)
+        display.text("Syncing time", 0, 24)
         display.show()
         sync_time()
         set_led_color(0, 0, 0)

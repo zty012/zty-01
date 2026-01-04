@@ -8,7 +8,7 @@ from ui_framework.components.base import Component
 class Text(Component):
     """文本组件"""
 
-    def __init__(self, text="", x=0, y=0, color=1):
+    def __init__(self, text="", x=0, y=0, color=1, align="left"):
         """
         初始化文本组件
 
@@ -21,7 +21,7 @@ class Text(Component):
         super().__init__(x, y)
         self.text = text
         self.color = color
-        self.align = "left"  # left, center, right
+        self.align = align
 
     def _render_self(self, display):
         """渲染文本"""

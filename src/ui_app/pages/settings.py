@@ -14,10 +14,14 @@ class SettingsPage(Page):
 
         # 设置菜单
         self.menu = Menu("Settings", x=0, y=0, width=128)
-        self.menu.add_item("Display", lambda: print("Display settings"))
-        self.menu.add_item("Network", lambda: print("Network settings"))
-        self.menu.add_item("Time", lambda: print("Time settings"))
-        self.menu.add_item("About", lambda: self.manager.push_page("about"))
+        self.menu.add_item(
+            "Network",
+            lambda: self.manager and self.manager.push_page("network"),
+        )
+        self.menu.add_item(
+            "About",
+            lambda: self.manager and self.manager.push_page("about"),
+        )
         self.add_component(self.menu)
 
     def _handle_page_event(self, event):

@@ -119,7 +119,6 @@ class NetworkPage(Page):
                 KeyboardPage(
                     f"Pwd for {ssid}",
                     callback=lambda pwd: self.connect_to_network(ssid, pwd),
-                    default_value="58785428",
                 )
             )
 

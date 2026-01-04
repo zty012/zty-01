@@ -13,4 +13,5 @@ UI 组件包
     from ui_framework.components.icon import Icon
     from ui_framework.components.label import Label
     from ui_framework.components.keyboard import Keyboard
+    from ui_framework.components.unifont_text import UnifontText
 """
