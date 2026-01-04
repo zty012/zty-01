@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+
 def generate_char_list():
     chars = []
 
@@ -20,10 +23,10 @@ def generate_char_list():
                 continue
 
     # 3. 写入文件，使用 UTF-8 编码存储
-    with open("chars.txt", "w", encoding="utf-8") as f:
+    with open("unifont_chars.txt", "w", encoding="utf-8") as f:
         f.write("".join(chars))
 
-    print(f"成功生成 chars.txt，包含字符总数: {len(chars)}")
+    print(f"成功生成 unifont_chars.txt，包含字符总数: {len(chars)}")
 
 
 if __name__ == "__main__":

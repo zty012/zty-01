@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -23,4 +25,4 @@ def generate_font_bin(ttf_path, chars_file, output_bin):
 
 
 # 运行
-generate_font_bin("unifont.ttf", "chars.txt", "unifont.bin")
+generate_font_bin("unifont.ttf", "unifont_chars.txt", "unifont.bin")

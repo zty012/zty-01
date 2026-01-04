@@ -5,16 +5,15 @@
         "python.analysis": {
           "extraPaths": [
             "./.venv/Lib/site-packages",
-            "./.venv/lib/python3.12/site-packages",
             "./.venv/lib/python3.13/site-packages",
-            "./.venv/lib/python3.14/site-packages"
+            "./.venv/lib/python3.14/site-packages",
           ],
           "typeCheckingMode": "basic",
           "diagnosticSeverityOverrides": {
-            "reportMissingModuleSource": false
-          }
-        }
-      }
-    }
-  }
+            "reportMissingModuleSource": false,
+          },
+        },
+      },
+    },
+  },
 }
