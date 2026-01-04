@@ -6,6 +6,8 @@ from machine import RTC
 from config import settings
 from ntp import Ntp
 
+sta_if = network.WLAN(network.STA_IF)
+
 
 def sync_time():
     hosts = settings.get(
@@ -30,7 +32,6 @@ def sync_time():
 
 
 def connect_to_saved_networks():
-    sta_if = network.WLAN(network.STA_IF)
     sta_if.active(True)
     saved_networks = settings.get("saved_networks", {})
     networks = sta_if.scan()

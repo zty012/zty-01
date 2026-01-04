@@ -2,12 +2,10 @@
 网络状态页面
 """
 
-import time
-
 import machine
 import network
 
-from common import sync_time
+from common import sta_if, sync_time
 from config import save_settings, settings
 from ui_app.pages.keyboard import KeyboardPage
 from ui_framework.components.menu import Menu
@@ -37,7 +35,6 @@ class NetworkPage(Page):
 
         self.temp_password_store = {}
 
-        self.sta_if = network.WLAN(network.STA_IF)
         # 设置菜单
         self.menu = Menu("Network", x=0, y=0, width=128)
         self.add_component(self.menu)
@@ -46,12 +43,12 @@ class NetworkPage(Page):
     def update_menu(self):
         self.menu.items = []
         self.menu.add_item("Refresh", self.update_menu)
-        self.menu.add_item(statuses.get(self.sta_if.status(), "Unknown"))
-        # print(self.sta_if.status())
-        if self.sta_if.status() == network.STAT_GOT_IP:
-            ssid = self.sta_if.config("essid")
+        self.menu.add_item(statuses.get(sta_if.status(), "Unknown"))
+        # print(sta_if.status())
+        if sta_if.status() == network.STAT_GOT_IP:
+            ssid = sta_if.config("essid")
             self.menu.add_item(ssid)
-            self.menu.add_item("Disconnect", self.sta_if.disconnect)
+            self.menu.add_item("Disconnect", sta_if.disconnect)
             if ssid in settings.get("saved_networks", {}):
                 self.menu.add_item("Forget", lambda: self.forget_network(ssid))
             else:
@@ -62,7 +59,7 @@ class NetworkPage(Page):
                     ),
                 )
             self.menu.add_item("-" * 16)
-            ip, subnet, gateway, dns = self.sta_if.ifconfig()
+            ip, subnet, gateway, dns = sta_if.ifconfig()
             self.menu.add_item("IP:")
             self.menu.add_item(f" {ip}")
             self.menu.add_item("Gateway:")
@@ -70,13 +67,13 @@ class NetworkPage(Page):
             self.menu.add_item("DNS:")
             self.menu.add_item(f" {dns}")
             self.menu.add_item("Signal Strength:")
-            rssi = self.sta_if.status("rssi")
+            rssi = sta_if.status("rssi")
             self.menu.add_item(f" {rssi} dBm")
             sync_time()
-        elif self.sta_if.status() == network.STAT_IDLE:
+        elif sta_if.status() == network.STAT_IDLE:
             self.menu.add_item("-" * 16)
             # scan
-            networks = self.sta_if.scan()
+            networks = sta_if.scan()
             for ssid, bssid, channel, rssi, security, hidden in networks:
                 if ssid == b"":
                     continue
@@ -110,7 +107,7 @@ class NetworkPage(Page):
         machine.reset()
 
     def connect_to_open_network(self, ssid):
-        self.sta_if.connect(ssid)
+        sta_if.connect(ssid)
         self.update_menu()
 
     def request_network_password(self, ssid):
@@ -125,12 +122,12 @@ class NetworkPage(Page):
     def connect_to_network(self, ssid, password):
         if not password:
             return
-        self.sta_if.connect(ssid, password)
+        sta_if.connect(ssid, password)
         self.temp_password_store[ssid] = password
         self.update_menu()
 
     def forget_network(self, ssid):
-        self.sta_if.disconnect()
+        sta_if.disconnect()
         saved_networks = settings.get("saved_networks", {})
         if ssid in saved_networks:
             del saved_networks[ssid]
