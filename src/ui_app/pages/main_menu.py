@@ -16,6 +16,7 @@ class MainMenu(Page):
         self.menu = Menu("Menu", x=0, y=0, width=128)
         self.menu.add_item("LED", lambda: self.goto("led"))
         self.menu.add_item("Snake Game", lambda: self.goto("snake_game"))
+        self.menu.add_item("Flappy Bird", lambda: self.goto("flappy_bird"))
         self.menu.add_item("Settings", lambda: self.goto("settings"))
         self.add_component(self.menu)
 
