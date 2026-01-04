@@ -1,4 +1,5 @@
 from data import LESSONS
+from ntp import Ntp
 from ui_framework.components.text import Text
 from ui_framework.components.unifont_text import UnifontText
 from ui_framework.page import Page
@@ -9,7 +10,7 @@ class LessonsPage(Page):
         super().__init__("Lessons")
 
         self.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-        self.current_weekday = 0
+        self.current_weekday = max(0, min(Ntp.time()[6], 4))  # 0-4 对应周一到周五
         self.cursor_row = 0
         self.cursor_col = 0
 

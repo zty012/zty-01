@@ -8,7 +8,9 @@ from ui_framework.components.base import Component
 class ProgressBar(Component):
     """进度条组件"""
 
-    def __init__(self, x=0, y=0, width=100, height=8, value=0, max_value=100):
+    def __init__(
+        self, x=0, y=0, width=100, height=8, value=0, max_value=100, border=True
+    ):
         """
         初始化进度条
 
@@ -21,7 +23,7 @@ class ProgressBar(Component):
         super().__init__(x, y, width, height)
         self.value = value
         self.max_value = max_value
-        self.border = True
+        self.border = border
 
     def set_value(self, value):
         """设置进度值"""

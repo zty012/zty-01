@@ -26,7 +26,7 @@ def sync_time():
     Ntp.set_datetime_callback(_rtc.datetime)
     Ntp.set_hosts(tuple(hosts))
     Ntp.set_ntp_timeout(1)
-    Ntp.set_timezone(8, 0)
+    Ntp.set_timezone(21, 0)
     Ntp.set_epoch(Ntp.EPOCH_1970)
     Ntp.rtc_sync()
 
