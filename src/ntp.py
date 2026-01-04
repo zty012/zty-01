@@ -605,15 +605,15 @@ class Ntp:
                 )
             )
 
-        # if (
-        #     (minute not in (0, 30, 45))
-        #     or (minute == 0 and not (-12 <= hour <= 14))
-        #     or (minute == 30 and hour not in (-9, -3, 3, 4, 5, 6, 9, 10))
-        #     or (minute == 45 and hour not in (5, 8, 12))
-        # ):
-        #     raise ValueError(
-        #         "Invalid timezone for hour={} and minute={}".format(hour, minute)
-        #     )
+        if (
+            (minute not in (0, 30, 45))
+            or (minute == 0 and not (-12 <= hour <= 14))
+            or (minute == 30 and hour not in (-9, -3, 3, 4, 5, 6, 9, 10))
+            or (minute == 45 and hour not in (5, 8, 12))
+        ):
+            raise ValueError(
+                "Invalid timezone for hour={} and minute={}".format(hour, minute)
+            )
 
         cls._timezone = hour * 3600 + minute * 60
 
