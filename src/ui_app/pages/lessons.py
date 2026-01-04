@@ -100,10 +100,7 @@ class LessonsPage(Page):
                         self._handle_long_press(key)
 
     def _handle_long_press(self, key):
-        if key == "back":
-            if self.manager:
-                self.manager.pop_page()
-        elif key == "up":
+        if key == "up":
             self.current_weekday = (self.current_weekday - 1) % 5
             self.update_display()
         elif key == "down":
@@ -115,43 +112,38 @@ class LessonsPage(Page):
         key = event.get("key")
 
         if event_type == "key_press":
-            if key in ["up", "down", "back"]:
+            if key in ["up", "down"]:
                 self.long_press_time[key] = 0
                 self.long_press_triggered.pop(key, None)
 
             if key == "up":
-                if self.cursor_row > 0:
-                    self.cursor_row -= 1
+                # 向前移动光标
+                lessons = LESSONS[self.current_weekday]
+                cursor_index = self.cursor_row * 5 + self.cursor_col
+                if cursor_index > 0:
+                    cursor_index -= 1
+                    self.cursor_row = cursor_index // 5
+                    self.cursor_col = cursor_index % 5
                     self.update_display()
                 return True
             elif key == "down":
+                # 向后移动光标
                 lessons = LESSONS[self.current_weekday]
-                max_rows = (len(lessons) - 1) // 5
-                if self.cursor_row < max_rows:
-                    cursor_index = (self.cursor_row + 1) * 5 + self.cursor_col
-                    if cursor_index < len(lessons):
-                        self.cursor_row += 1
-                        self.update_display()
-                return True
-            elif key == "back":
-                if self.cursor_col > 0:
-                    self.cursor_col -= 1
-                elif self.cursor_row > 0:
-                    self.cursor_row -= 1
-                    self.cursor_col = 4
-                self.update_display()
-                return True
-            elif key == "ok":
-                # 往右，或者到下一行开头
-                lessons = LESSONS[self.current_weekday]
+                lessons = [lesson for lesson in lessons if not lesson.hidden]
                 cursor_index = self.cursor_row * 5 + self.cursor_col
                 if cursor_index + 1 < len(lessons):
-                    if self.cursor_col < 4:
-                        self.cursor_col += 1
-                    else:
-                        self.cursor_col = 0
-                        self.cursor_row += 1
+                    cursor_index += 1
+                    self.cursor_row = cursor_index // 5
+                    self.cursor_col = cursor_index % 5
                     self.update_display()
+                return True
+            elif key == "back":
+                # 返回
+                if self.manager:
+                    self.manager.pop_page()
+                return True
+            elif key == "ok":
+                # 什么都不做
                 return True
 
         elif event_type == "key_release":
