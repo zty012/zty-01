@@ -11,9 +11,9 @@ def sync_time():
     hosts = settings.get(
         "ntp_hosts",
         [
-            "ntp.tuna.tsinghua.edu.cn",
             "ntp.aliyun.com",
             "cn.pool.ntp.org",
+            "ntp.tuna.tsinghua.edu.cn",
             "0.pool.ntp.org",
             "1.pool.ntp.org",
             "2.pool.ntp.org",
