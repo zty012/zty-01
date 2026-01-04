@@ -4,6 +4,7 @@
 
 import time
 
+from ntp import Ntp
 from ui_framework.components.text import Text
 from ui_framework.page import Page
 
@@ -41,11 +42,12 @@ class ClockPage(Page):
         super().update(delta_time)
         if self.active:
             try:
-                t = time.localtime()
-                self.time_label.text = "{:02d}:{:02d}:{:02d}".format(t[3], t[4], t[5])
-                self.date_label.text = "{:04d}/{:02d}/{:02d}".format(t[0], t[1], t[2])
-                if 0 <= t[6] < 7:
-                    self.weekday_label.text = self.weekdays[t[6]]
+                year, month, day, hour, minute, second, weekday, yearday, us = (
+                    Ntp.time()
+                )
+                self.time_label.text = f"{hour:02}:{minute:02}:{second:02}"
+                self.date_label.text = f"{year:04}/{month:02}/{day:02}"
+                self.weekday_label.text = self.weekdays[weekday - 1]
             except Exception as e:
                 self.time_label.text = "Error"
                 print(f"Clock error: {e}")
