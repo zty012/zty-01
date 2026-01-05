@@ -14,14 +14,13 @@ class LEDPage(Page):
     """LED 页面"""
 
     def __init__(self):
-        super().__init__("LEDTest")
+        super().__init__("LEDPage")
 
         # 设置菜单
         self.menu = Menu("LED", x=0, y=0, width=128)
         self.menu.add_item("Flashbang", self.flashbang)
         self.menu.add_item("Strobe", self.strobe)
         self.menu.add_item("Fast strobe", self.fast_strobe)
-        self.menu.add_item("Police", self.police)
         self.add_component(self.menu)
 
     def flashbang(self):
@@ -42,13 +41,6 @@ class LEDPage(Page):
             time.sleep(0.05)
             set_led_color(0, 0, 0, 0)
             time.sleep(0.05)
-
-    def police(self):
-        while not self._back_pressed():
-            set_led_color(255, 0, 0, 0)
-            time.sleep(0.25)
-            set_led_color(0, 0, 255, 0)
-            time.sleep(0.25)
 
     def _back_pressed(self):
         return (
