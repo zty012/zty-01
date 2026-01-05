@@ -7,6 +7,7 @@ from ui_app.pages.main_menu import MainMenu
 from ui_app.pages.network import NetworkPage
 from ui_app.pages.settings import SettingsPage
 from ui_app.pages.snake_game import SnakeGamePage
+from ui_app.pages.whale import WhalePage
 
 
 def create_ui(ui_framework):
@@ -20,6 +21,7 @@ def create_ui(ui_framework):
     # 注册所有实用页面
     ui_framework.register_page("home", Home())
     ui_framework.register_page("main_menu", MainMenu())
+    ui_framework.register_page("whale", WhalePage())
     ui_framework.register_page("snake_game", SnakeGamePage())
     ui_framework.register_page("flappy_bird", FlappyBirdPage())
     ui_framework.register_page("network", NetworkPage())
