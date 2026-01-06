@@ -7,6 +7,7 @@ from config import settings
 from ntp import Ntp
 
 sta_if = network.WLAN(network.STA_IF)
+sta_if.active(True)
 
 
 def sync_time():
@@ -32,7 +33,6 @@ def sync_time():
 
 
 def connect_to_saved_networks():
-    sta_if.active(True)
     saved_networks = settings.get("saved_networks", {})
     networks = sta_if.scan()
     # 按照信号强度排序，优先连接信号强的网络

@@ -3,9 +3,6 @@ from machine import I2C, Pin
 import ssd1306
 from common import connect_to_saved_networks, sync_time
 from led import set_led_color
-from ui_app.pages import create_ui
-from ui_framework.components.unifont_text import UnifontText
-from ui_framework.framework import UIFramework
 
 
 def main():
@@ -24,10 +21,16 @@ def main():
     set_led_color(2, 5, 16)
 
     try:
-        display.text("Loading Unifont", 0, 8)
+        from ui_framework.components.fusion_text import FusionText
+        from ui_framework.components.unifont_text import UnifontText
+
+        display.text("Loading fonts", 0, 8)
         display.show()
         UnifontText.init_unifont(
-            bin_path="/unifont.bin", chars_path="/unifont_chars.txt"
+            bin_path="/assets/unifont.bin", chars_path="/assets/chars.txt"
+        )
+        FusionText.init_fusion(
+            bin_path="/assets/fusion.bin", chars_path="/assets/chars.txt"
         )
         display.text("Connecting Wi-Fi", 0, 16)
         display.show()
@@ -40,6 +43,9 @@ def main():
         set_led_color(10, 0, 0)
         display.text(str(e), 0, 24)
         # 继续运行，不中断 UI
+
+    from ui_app.pages import create_ui
+    from ui_framework.framework import UIFramework
 
     # 创建 UI 框架
     ui = UIFramework(display)

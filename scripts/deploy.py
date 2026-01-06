@@ -61,6 +61,17 @@ class Deployer:
             return False
 
         print(f"Upload: {local_path}")
+
+        # 如果在文件夹里，先创建文件夹
+        for part in Path(remote_path).parents:
+            if str(part) == ".":
+                break
+            try:
+                if self.state.transport:
+                    self.state.transport.fs_mkdir(part.as_posix())
+            except Exception:
+                pass  # 目录可能已存在
+
         commands.do_filesystem_cp(
             self.state,
             str(local_path),

@@ -2,11 +2,10 @@
 主菜单页面
 """
 
-from datetime import time, timedelta
+from datetime import time
 
 from data import LESSONS
 from ntp import Ntp
-from ui_framework.components.progress_bar import ProgressBar
 from ui_framework.components.text import Text
 from ui_framework.components.unifont_text import UnifontText
 from ui_framework.page import Page
