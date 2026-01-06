@@ -4,12 +4,13 @@
 
 from easings import ease_out_expo
 from ui_framework.components.base import Component
+from ui_framework.components.text import Text
 
 
 class Menu(Component):
     """菜单组件（带标题）"""
 
-    def __init__(self, title, x=0, y=0, width=128, items=None):
+    def __init__(self, title, x=0, y=0, width=128, items=None, text_class=None):
         """
         初始化菜单
 
@@ -18,15 +19,20 @@ class Menu(Component):
             x, y: 左上角坐标
             width: 菜单宽度
             items: 菜单项列表 [{'label': '选项1', 'action': callback}, ...]
+            text_class: 文本类（Text, UnifontText 或 FusionText），默认为 Text
         """
         super().__init__(x, y, width)
         self.title = title
         self.items = items or []
         self.selected_index = 0
-        self.title_height = 14  # 标题区域高度
-        self.item_height = 12
         self.scroll_offset = 0
-        self.max_visible_items = 4
+
+        # 设置文本类
+        self.text_class = text_class if text_class is not None else Text
+
+        # 根据文本类的 SIZE 属性计算 item_height 和 max_visible_items
+        self.item_height = self.text_class.SIZE + 4  # 文字高度 + 上下边距
+        self.max_visible_items = 64 // self.item_height - 1  # 减去标题行
 
         # 动画相关
         self.anim_enabled = True
@@ -124,15 +130,46 @@ class Menu(Component):
             # 动画已完成，确保在目标位置
             self.anim_current_y = self.anim_target_y
 
+    def _render_text(self, display, text, x, y):
+        """
+        使用配置的文本类渲染文本
+
+        Args:
+            display: 显示对象
+            text: 要渲染的文本
+            x: x 坐标
+            y: y 坐标
+        """
+        if self.text_class == Text:
+            # 使用默认的 display.text() 方法
+            display.text(text, x, y, 1)
+        else:
+            # 使用自定义字体类（UnifontText 或 FusionText）
+            text_component = self.text_class(text=text, x=x, y=y, color=1)
+            text_component._render_self(display)
+
     def _render_self(self, display):
         """渲染菜单"""
         # 渲染标题（居中）
-        title_text_width = len(self.title) * 8
+        if self.text_class == Text:
+            title_text_width = len(self.title) * 8
+        else:
+            # 对于自定义字体，估算宽度
+            # 获取字符宽度常量（FusionText: 6/12, UnifontText: 8/16）
+            ascii_width = self.text_class.SIZE // 2
+            cjk_width = self.text_class.SIZE
+            title_text_width = 0
+            for char in self.title:
+                if ord(char) < 128:
+                    title_text_width += ascii_width
+                else:
+                    title_text_width += cjk_width
+
         title_x = self.x + (self.width - title_text_width) // 2
-        display.text(self.title, title_x, self.y + 2, 1)
+        self._render_text(display, self.title, title_x, self.y + 2)
 
         # 菜单项起始 Y 坐标
-        menu_start_y = self.y + self.title_height
+        menu_start_y = self.y + self.item_height
 
         visible_items = min(self.max_visible_items, len(self.items))
 
@@ -146,7 +183,7 @@ class Menu(Component):
             y = menu_start_y + i * self.item_height
 
             # 绘制文本（始终白色）
-            display.text(item["label"], self.x + 2, y + 2, 1)
+            self._render_text(display, item["label"], self.x + 2, y + 2)
 
             # 如果有操作，绘制一个小箭头提示
             if item.get("action"):

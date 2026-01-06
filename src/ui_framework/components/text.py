@@ -8,6 +8,8 @@ from ui_framework.components.base import Component
 class Text(Component):
     """文本组件"""
 
+    SIZE = 8
+
     def __init__(self, text="", x=0, y=0, color=1, align="left"):
         """
         初始化文本组件

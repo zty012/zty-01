@@ -10,6 +10,8 @@ from ui_framework.components.base import Component
 class FusionText(Component):
     """Fusion 文本组件，支持中英文混合显示（中文12x12，英文6x12）"""
 
+    SIZE = 12
+
     # 类级别的共享资源
     _fusion_index = None
     _fusion_file = None

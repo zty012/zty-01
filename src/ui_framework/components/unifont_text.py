@@ -10,6 +10,8 @@ from ui_framework.components.base import Component
 class UnifontText(Component):
     """Unifont 文本组件，支持中英文混合显示"""
 
+    SIZE = 16
+
     # 类级别的共享资源
     _unifont_index = None
     _unifont_file = None

@@ -2,6 +2,7 @@
 设置页面
 """
 
+from ui_framework.components.fusion_text import FusionText
 from ui_framework.components.menu import Menu
 from ui_framework.page import Page
 
@@ -13,13 +14,13 @@ class SettingsPage(Page):
         super().__init__("Settings")
 
         # 设置菜单
-        self.menu = Menu("Settings", x=0, y=0, width=128)
+        self.menu = Menu("Settings", x=0, y=0, width=128, text_class=FusionText)
         self.menu.add_item(
-            "Network",
+            "网络",
             lambda: self.manager and self.manager.push_page("network"),
         )
         self.menu.add_item(
-            "About",
+            "关于",
             lambda: self.manager and self.manager.push_page("about"),
         )
         self.add_component(self.menu)
